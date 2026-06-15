@@ -137,17 +137,21 @@ Write out what a full user interaction looks like from start to finish — tool 
 **Example user query:** "I'm looking for a vintage graphic tee under $30. I mostly wear baggy jeans and chunky sneakers. What's out there and how would I style it?"
 
 **Step 1:**
-<!-- The agent calls search_listings (description="vintage graphic tee", size="M", max_price=30.0). The tool searches the listings dataset for matching items based on the description, size, and price limit. The tool returns several matching listings, and the agent stores the highest-ranked result as selected_item. -->
+<!--  -->
+The agent calls search_listings (description="vintage graphic tee", size="M", max_price=30.0). The tool searches the listings dataset for matching items based on the description, size, and price limit. The tool returns several matching listings, and the agent stores the highest-ranked result as selected_item.
 
 **Step 2:**
-<!-- The agent calls suggest_outfit (new_item=selected_item, wardrobe=get_example_wardrobe()). The selected listing from Step 1 is passed directly into the tool without the user having to re-enter it. The tool analyzes the user's wardrobe and returns a complete outfit recommendation that includes the new thrifted item. -->
+<!--  -->
+The agent calls suggest_outfit (new_item=selected_item, wardrobe=get_example_wardrobe()). The selected listing from Step 1 is passed directly into the tool without the user having to re-enter it. The tool analyzes the user's wardrobe and returns a complete outfit recommendation that includes the new thrifted item.
 
 **Step 3:**
-<!-- The agent stores the outfit recommendation as outfit and calls create_fit_card(outfit=outfit, new_item=selected_item). The outfit from Step 2 is passed directly into the tool without re-entry. The tool generates a short social-media-style caption and outfit summary based on the selected item and outfit combination. -->
+<!--  -->
+The agent stores the outfit recommendation as outfit and calls create_fit_card(outfit=outfit, new_item=selected_item). The outfit from Step 2 is passed directly into the tool without re-entry. The tool generates a short social-media-style caption and outfit summary based on the selected item and outfit combination.
 
 **Final output to user:**
-<!-- Found: Faded Band Tee — $22, Good Condition, Depop.
+<!--  -->
+Found: Faded Band Tee — $22, Good Condition, Depop.
 
 Suggested Outfit: Pair the graphic tee with your baggy jeans and chunky sneakers for a relaxed vintage streetwear look. Add a lightweight overshirt or denim jacket for layering.
 
-Fit Card: "Thrifted this faded band tee for $22 and it pairs perfectly with my baggy denim and chunky sneakers. Easy vintage vibes without breaking the budget." -->
+Fit Card: "Thrifted this faded band tee for $22 and it pairs perfectly with my baggy denim and chunky sneakers. Easy vintage vibes without breaking the budget."
