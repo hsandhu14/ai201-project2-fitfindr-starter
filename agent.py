@@ -94,7 +94,86 @@ def run_agent(query: str, wardrobe: dict) -> dict:
     """
     # TODO: implement the planning loop
     session = _new_session(query, wardrobe)
-    session["error"] = "Planning loop not yet implemented."
+
+    # Step 2: simple query parsing
+    lower_query = query.lower()
+
+    # Find max price from phrases like "under $30" or "$30"
+    max_price = None
+    import re
+    price_match = re.search(r"\$?(\d+(?:\.\d+)?)", lower_query)
+    if price_match:
+        max_price = float(price_match.group(1))
+
+    # Find size from phrases like "size M" or "medium"
+    size = None
+    size_match = re.search(r"size\s+(xxs|xs|s|m|l|xl|xxl)", lower_query)
+    if size_match:
+        size = size_match.group(1).upper()
+    elif "medium" in lower_query:
+        size = "M"
+    elif "small" in lower_query:
+        size = "S"
+    elif "large" in lower_query:
+        size = "L"
+
+    # Clean description by removing price/size words
+    description = lower_query
+    description = re.sub(r"under\s+\$?\d+(?:\.\d+)?", "", description)
+    description = re.sub(r"\$?\d+(?:\.\d+)?", "", description)
+    description = re.sub(r"size\s+(xxs|xs|s|m|l|xl|xxl)", "", description)
+    description = description.replace("looking for", "")
+    description = description.replace("i'm", "")
+    description = description.replace("im", "")
+    description = description.strip()
+
+    session["parsed"] = {
+        "description": description,
+        "size": size,
+        "max_price": max_price,
+    }
+
+    # Step 3: search listings
+    results = search_listings(description, size=size, max_price=max_price)
+    session["search_results"] = results
+
+    if not results:
+        session["error"] = (
+            f"I couldn't find any listings for '{description}'"
+            f"{' in size ' + size if size else ''}"
+            f"{' under $' + str(max_price) if max_price is not None else ''}. "
+            "Try using a broader search term, raising your budget, or removing the size filter."
+        )
+        return session
+
+       # Step 4: store selected item
+    session["selected_item"] = results[0]
+
+    print("STATE selected_item:")
+    print(session["selected_item"]["title"])
+
+    # Step 5: suggest outfit using selected item from state
+    session["outfit_suggestion"] = suggest_outfit(
+        session["selected_item"],
+        session["wardrobe"],
+    )
+
+    print("\nSTATE outfit_suggestion:")
+    print(session["outfit_suggestion"][:100])
+
+    if not session["outfit_suggestion"]:
+        session["error"] = (
+            "I found an item, but I couldn't generate an outfit suggestion. "
+            "Try adding more wardrobe details."
+        )
+        return session
+
+    # Step 6: create fit card using outfit from state
+    session["fit_card"] = create_fit_card(
+        session["outfit_suggestion"],
+        session["selected_item"],
+    )
+
     return session
 
 
